@@ -8,40 +8,32 @@ import com.nowjordanhappy.photos.domain.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class SearchPhotos(
+class GetPhotoDetail(
     private val repository: PhotoRepository
 
 ) {
     fun execute(
-        query: String,
-        page: Int,
-        pageSize: Int,
-        isNetworkAvailable: Boolean
-    ): Flow<DataState<List<Photo>>> = flow {
+        id: Int
+    ): Flow<DataState<Photo>> = flow {
         try {
             emit(DataState.Loading(
                 progressBarState = ProgressBarState.Loading
             ))
 
-            if(isNetworkAvailable){
+            /*if(isNetworkAvailable){
                 try {
-                    repository.searchPhotoRemote(
-                        query = query,
+                    repository.getRecentPhotosRemote(
                         page = page,
                         pageSize = pageSize
                     )
                 }catch (e: Exception){
-                    emit(DataState.Response(UIComponent.None(e.message ?: "API Error")))
+                    emit(DataState.error(e.message ?: "API Error"))
                 }
-            }
+            }*/
 
-            val localPhotos = repository.searchPhotoRemote(
-                query = query,
-                page = page,
-                pageSize = pageSize
-            )
+            val localPhoto = repository.getPhotoById(id) ?: throw  Exception("That hero does not exist in the cache")
 
-            emit(DataState.Data(localPhotos))
+            emit(DataState.Data(localPhoto))
 
         } catch (e: Exception) {
             emit(DataState.Response(UIComponent.None(e.message ?: "Unknown Error")))

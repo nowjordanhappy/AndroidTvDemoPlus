@@ -26,7 +26,7 @@ interface PhotoDao {
     """)
     suspend fun getAllRecipes(
         page: Int,
-        pageSize: Int = RECIPE_PAGINATION_PAGE_SIZE
+        pageSize: Int
     ): List<PhotoEntity>
 
     @Query("""
@@ -38,6 +38,16 @@ interface PhotoDao {
     suspend fun searchRecipes(
         query: String,
         page: Int,
-        pageSize: Int = RECIPE_PAGINATION_PAGE_SIZE
+        pageSize: Int
+    ): List<PhotoEntity>
+
+    @Query("""
+        SELECT * FROM photo 
+        WHERE is_public = 1 
+        ORDER BY date_upload DESC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
+        """)
+    suspend fun getRecentRecipes(
+        page: Int,
+        pageSize: Int
     ): List<PhotoEntity>
 }

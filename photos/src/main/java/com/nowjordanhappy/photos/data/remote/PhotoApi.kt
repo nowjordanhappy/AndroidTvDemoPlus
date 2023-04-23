@@ -16,7 +16,7 @@ interface PhotoApi {
         @Query("short_limit") shortLimit: Int,
         @Query("format") format: String,
         @Query("nojsoncallback") nojsoncallback: Int,
-    ): Response<GetGalleryInfoResponse>
+    ): GetGalleryInfoResponse
 
     @GET("rest/")
     suspend fun search(
@@ -29,7 +29,7 @@ interface PhotoApi {
         @Query("sort") sort: String,
         @Query("format") format: String,
         @Query("nojsoncallback") nojsoncallback: Int,
-    ): Response<GetRecentResponse>
+    ): GetRecentResponse
 
     @GET("rest/")
     suspend fun getRecent(
@@ -40,7 +40,7 @@ interface PhotoApi {
         @Query("page") page: Int,
         @Query("format") format: String,
         @Query("nojsoncallback") nojsoncallback: Int,
-    ): Response<GetRecentResponse>
+    ): GetRecentResponse
 
     companion object{
         const val BASE_URL = "https://www.flickr.com/services/"

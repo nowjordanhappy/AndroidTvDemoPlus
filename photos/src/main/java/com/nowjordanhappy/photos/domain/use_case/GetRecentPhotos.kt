@@ -8,12 +8,11 @@ import com.nowjordanhappy.photos.domain.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class SearchPhotos(
+class GetRecentPhotos(
     private val repository: PhotoRepository
 
 ) {
     fun execute(
-        query: String,
         page: Int,
         pageSize: Int,
         isNetworkAvailable: Boolean
@@ -25,8 +24,7 @@ class SearchPhotos(
 
             if(isNetworkAvailable){
                 try {
-                    repository.searchPhotoRemote(
-                        query = query,
+                    repository.getRecentPhotosRemote(
                         page = page,
                         pageSize = pageSize
                     )
@@ -35,8 +33,7 @@ class SearchPhotos(
                 }
             }
 
-            val localPhotos = repository.searchPhotoRemote(
-                query = query,
+            val localPhotos = repository.getRecentPhotosLocal(
                 page = page,
                 pageSize = pageSize
             )

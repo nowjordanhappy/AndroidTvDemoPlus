@@ -1,32 +1,13 @@
 package com.nowjordanhappy.photos.domain.data
 
-data class DataState<out T>(
-    val data: T? = null,
-    val error: String? = null,
-    val loading: Boolean = false,
-){
-    companion object{
+import com.nowjordanhappy.core.domain.ProgressBarState
+import com.nowjordanhappy.core.domain.UIComponent
 
-        fun <T> success(
-            data: T
-        ): DataState<T> {
-            return DataState(
-                data = data,
-            )
-        }
-
-        fun <T> error(
-            message: String,
-        ): DataState<T> {
-            return DataState(
-                error = message
-            )
-        }
-
-        fun <T> loading(): DataState<T> = DataState(loading = true)
-    }
+sealed class DataState<T>{
+    data class Response<T>(val uiComponent: UIComponent): DataState<T>()
+    data class Data<T>(val data: T? = null): DataState<T>()
+    data class Loading<T>(val progressBarState: ProgressBarState = ProgressBarState.Idle): DataState<T>()
 }
-
 
 
 
