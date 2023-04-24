@@ -3,6 +3,7 @@ package com.nowjordanhappy.photos_ui.di
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
+import com.nowjordanhappy.photos_ui.utils.ManagerConnection
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,7 @@ object PhotoUiModule {
     @Provides
     fun provideConnectivityManager(
         app: Application
-    ): ConnectivityManager{
-        return app.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    ): ManagerConnection {
+        return ManagerConnection(app)
     }
 }

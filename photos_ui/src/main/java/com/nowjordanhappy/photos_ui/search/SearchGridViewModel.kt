@@ -1,16 +1,18 @@
 package com.nowjordanhappy.photos_ui.search
 
 import android.net.ConnectivityManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nowjordanhappy.core.Constants
+import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.core_ui.domain.UIComponent
 import com.nowjordanhappy.photos_domain.data.DataState
+import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_domain.use_case.PhotoUseCases
+import com.nowjordanhappy.photos_ui.utils.ManagerConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,10 +20,36 @@ import javax.inject.Inject
 class SearchGridViewModel
     @Inject constructor(
         private val photosUseCases: PhotoUseCases,
-        private val connectivityManager: ConnectivityManager,
+        private val connectivityManager: ManagerConnection,
 ) : ViewModel(){
     private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
+
+    private val _progressBarState: MutableStateFlow<ProgressBarState> = MutableStateFlow(ProgressBarState.Idle)
+    val progressBarState: StateFlow<ProgressBarState> = _progressBarState.asStateFlow()
+
+    private val _photos = MutableStateFlow(emptyList<Photo>())
+    val photos: StateFlow<List<Photo>> = _photos.asStateFlow()
+
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
+
+    private val _page = MutableStateFlow(1)
+    //val page = _page.asStateFlow()
+
+    private val _pageSize = MutableStateFlow(Constants.RECIPE_PAGINATION_PAGE_SIZE)
+    //val pageSize = _pageSize.asStateFlow()
+
+    private val _gridModeOn = MutableStateFlow(false)
+    val gridModeOn = _gridModeOn.asStateFlow()
+
+    private val _listSearchType: MutableStateFlow<ListSearchType> = MutableStateFlow(ListSearchType.Recent)
+    val listSearchType = _listSearchType.asStateFlow()
+
+    init {
+        //onEvent(SearchEvent.OnRecentPhotos)
+        loadMoreData()
+    }
 
     fun onEvent(event: SearchEvent){
         when(event){
@@ -30,6 +58,9 @@ class SearchGridViewModel
             }
             SearchEvent.OnSearch -> {
                 onSearch()
+            }
+            SearchEvent.OnRecentPhotos -> {
+                onRecentPhotos()
             }
             SearchEvent.OnNextPage -> {
                 onNextPage()
@@ -41,47 +72,91 @@ class SearchGridViewModel
     }
 
     private fun onChangeGridMode(event: SearchEvent.OnChangeGridMode) {
-        _state.value = _state.value.copy(
+        /*_state.value = _state.value.copy(
             gridModeOn = event.gridModeOn
-        )
+        )*/
+        _gridModeOn.value = _gridModeOn.value
     }
 
     private fun onChangeQuery(event: SearchEvent.OnChangeQuery){
-        _state.value = _state.value.copy(
+        /*_state.value = _state.value.copy(
             query = event.query
-        )
+        )*/
+        _query.value = _query.value
     }
 
     private fun onNextPage() {
-        _state.value = _state.value.copy(
+        /*_state.value = _state.value.copy(
             page = _state.value.page + 1
-        )
-        onSearch()
+        )*/
+        _page.value = _page.value + 1
+        loadMoreData()
+    }
+
+    private fun loadMoreData(){
+        when(_listSearchType.value){
+            ListSearchType.Recent -> {
+                onRecentPhotos()
+            }
+            ListSearchType.Search -> {
+                onSearch()
+            }
+        }
     }
 
     private fun onSearch() {
         viewModelScope.launch {
             photosUseCases.searchPhotos.execute(
                 query = _state.value.query,
-                page = _state.value.page,
-                pageSize = _state.value.pageSize,
-                isNetworkAvailable = connectivityManager.isActiveNetworkMetered
+                page = _page.value,
+                pageSize = _pageSize.value,
+                isNetworkAvailable = connectivityManager.isNetworkAvailable()
             ).onEach { dataState ->
                 when(dataState){
                     is DataState.Data -> {
-                        _state.value = _state.value.copy(
-                            photos = dataState.data ?: emptyList()
-                        )
+                        _photos.value = dataState.data ?: emptyList()
                     }
                     is DataState.Loading -> {
-                        _state.value = _state.value.copy(
-                            progressBarState = dataState.progressBarState
-                        )
+                        _progressBarState.value = dataState.progressBarState
                     }
                     is DataState.Response -> {
                         when(dataState.uiComponent){
                             is UIComponent.None -> {
 
+                            }
+                        }
+                    }
+                }
+
+            }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun onRecentPhotos() {
+        Log.v("SearchGridVM", "onRecentPhotos")
+        viewModelScope.launch {
+            photosUseCases.getRecentPhotos.execute(
+                page = _page.value,
+                pageSize = _pageSize.value,
+                isNetworkAvailable = connectivityManager.isNetworkAvailable()
+            ).onEach { dataState ->
+                when(dataState){
+                    is DataState.Data -> {
+                        //_photos.emit(dataState.data ?: emptyList())
+                        _photos.value = dataState.data ?: emptyList()
+                        //_photos.value = dataState.data ?: emptyList()
+                        //_photos.value = dataState.data ?: emptyList()
+                        Log.v("SearchGridVM", "onRecentPhotos updating data: ${_photos.value.size}")
+                    }
+                    is DataState.Loading -> {
+                        Log.v("SearchGridVM", "onRecentPhotos progressBarState: ${dataState.progressBarState}")
+                        _progressBarState.value = dataState.progressBarState
+                        //_progressBarState.emit(dataState.progressBarState)
+                    }
+                    is DataState.Response -> {
+                        when(dataState.uiComponent){
+                            is UIComponent.None -> {
+                                Log.v("SearchGridVM", "onRecentPhotos UIComponent.None: ${(dataState.uiComponent as UIComponent.None).message}")
                             }
                         }
                     }

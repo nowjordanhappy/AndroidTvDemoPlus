@@ -15,4 +15,9 @@
         android:name="com.nowjordanhappy.photos_ui.search.SearchGridFragment"
         android:label="SearchGridFragment" />
 
+    <dialog
+        android:id="@+id/spinnerFragment"
+        android:name="com.nowjordanhappy.photos_ui.spinner.SpinnerFragment"
+        android:label="SpinnerFragment" />
+
 </navigation>

@@ -45,7 +45,7 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
 
     private fun getDateUpload(dateupload: String?): String{
         return dateupload?.let {
-            DateUtils.dateToString(DateUtils.stringToDate(it))
+            DateUtils.dateToString(DateUtils.longToDate(it.toLong()*1000))
         } ?: kotlin.run { "No Date" }
     }
 }
