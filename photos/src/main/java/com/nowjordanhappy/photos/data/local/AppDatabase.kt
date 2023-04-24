@@ -8,7 +8,7 @@ import com.nowjordanhappy.photos.data.local.entity.PhotoEntity
 @Database(entities = [PhotoEntity::class ], version = 1)
 abstract class AppDatabase: RoomDatabase() {
 
-    abstract fun photoDao(): PhotoDao
+    abstract val photoDao: PhotoDao
 
     companion object{
         val DATABASE_NAME: String = "photo_db"

@@ -1,7 +1,7 @@
 package com.nowjordanhappy.photos.domain.use_case
 
-import com.nowjordanhappy.core.domain.ProgressBarState
-import com.nowjordanhappy.core.domain.UIComponent
+import com.nowjordanhappy.domain.ProgressBarState
+import com.nowjordanhappy.domain.UIComponent
 import com.nowjordanhappy.photos.domain.data.DataState
 import com.nowjordanhappy.photos.domain.model.Photo
 import com.nowjordanhappy.photos.domain.repository.PhotoRepository
@@ -17,7 +17,7 @@ class GetPhotoDetail(
     ): Flow<DataState<Photo>> = flow {
         try {
             emit(DataState.Loading(
-                progressBarState = ProgressBarState.Loading
+                progressBarState = com.nowjordanhappy.domain.ProgressBarState.Loading
             ))
 
             /*if(isNetworkAvailable){
@@ -36,10 +36,10 @@ class GetPhotoDetail(
             emit(DataState.Data(localPhoto))
 
         } catch (e: Exception) {
-            emit(DataState.Response(UIComponent.None(e.message ?: "Unknown Error")))
+            emit(DataState.Response(com.nowjordanhappy.domain.UIComponent.None(e.message ?: "Unknown Error")))
         }finally {
             emit(DataState.Loading(
-                progressBarState = ProgressBarState.Idle
+                progressBarState = com.nowjordanhappy.domain.ProgressBarState.Idle
             ))
         }
     }

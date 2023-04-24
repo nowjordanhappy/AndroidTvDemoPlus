@@ -9,7 +9,8 @@ buildscript {
         classpath (Build.androidBuildTools)
         classpath (Build.hiltAndroidGradlePlugin)
         classpath (Build.kotlinGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
+        classpath (Build.navigationSafeArg)
+
     }
 }
 

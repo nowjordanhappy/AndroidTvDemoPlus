@@ -24,7 +24,17 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
     }
 
     override fun mapFromDomainModel(domainModel: Photo): PhotoDto {
-        TODO("Not yet implemented")
+        return PhotoDto(
+            id = domainModel.id,
+            owner = domainModel.owner,
+            secret = domainModel.secret ?: "",
+            server = domainModel.server ?: "",
+            title = domainModel.title,
+            ispublic = if(domainModel.isPublic)  1 else 0,
+            isfamily = if(domainModel.isFamily)  1 else 0,
+            dateupload = getDateUpload(domainModel.dateUpload),
+            ownername = domainModel.ownername,
+        )
     }
 
     private fun getImageUrl(id: String, server: String?, secret: String?): String?{

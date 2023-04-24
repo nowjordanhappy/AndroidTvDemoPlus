@@ -1,4 +1,4 @@
-package com.nowjordanhappy.core.domain
+package com.nowjordanhappy.core_ui.domain
 
 sealed class ProgressBarState{
     object Loading: ProgressBarState()

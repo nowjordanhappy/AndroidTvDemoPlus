@@ -1,6 +1,8 @@
 plugins {
     id (Plugins.androidApplication)
     id (Plugins.kotlinAndroid)
+    id (Plugins.kotlinKapt)
+    id (Plugins.daggerHiltAndroid)
 }
 
 android {
@@ -25,7 +27,12 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.core:core-ktx:1.7.0")
-    implementation ("androidx.leanback:leanback:1.0.0")
+    implementation(AndroidX.coreKtx)
+    implementation(Leanback.leanback)
     implementation ("com.github.bumptech.glide:glide:4.11.0")
+
+    implementation(DaggerHilt.hiltAndroid)
+    kapt(DaggerHilt.hiltAndroidCompiler)
+
+    implementation (project(Modules.photos_ui))
 }

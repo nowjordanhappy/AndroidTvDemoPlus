@@ -1,4 +1,4 @@
-package com.nowjordanhappy.core.domain
+package com.nowjordanhappy.core_ui.domain
 
 sealed class UIComponent{
 
@@ -6,5 +6,4 @@ sealed class UIComponent{
     data class None(
         val message: String
     ): UIComponent()
-
 }
