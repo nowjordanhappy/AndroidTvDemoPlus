@@ -24,7 +24,7 @@ class GetRecentPhotos(
             emit(DataState.Loading(
                 progressBarState = ProgressBarState.Loading
             ))
-            delay(2000)
+            //delay(2000)
 
             Log.v("SearchGridVM", "isNetworkAvailable: ${isNetworkAvailable}")
 
@@ -46,6 +46,7 @@ class GetRecentPhotos(
                 page = page,
                 pageSize = pageSize
             )
+
 
             emit(DataState.Data(localPhotos))
 

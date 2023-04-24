@@ -1,6 +1,5 @@
 package com.nowjordanhappy.photos_ui.search
 
-import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -96,7 +95,7 @@ class SearchGridViewModel
     private fun loadMoreData(){
         when(_listSearchType.value){
             ListSearchType.Recent -> {
-                onRecentPhotos()
+                onRecentPhotos(isForNextPage = true)
             }
             ListSearchType.Search -> {
                 onSearch()
@@ -132,7 +131,7 @@ class SearchGridViewModel
         }
     }
 
-    private fun onRecentPhotos() {
+    private fun onRecentPhotos(isForNextPage: Boolean = false) {
         Log.v("SearchGridVM", "onRecentPhotos")
         viewModelScope.launch {
             photosUseCases.getRecentPhotos.execute(
@@ -143,7 +142,11 @@ class SearchGridViewModel
                 when(dataState){
                     is DataState.Data -> {
                         //_photos.emit(dataState.data ?: emptyList())
-                        _photos.value = dataState.data ?: emptyList()
+                        if(!isForNextPage){
+                            _photos.value = dataState.data ?: emptyList()
+                        }else{
+                            appendPhotos(dataState.data ?: emptyList())
+                        }
                         //_photos.value = dataState.data ?: emptyList()
                         //_photos.value = dataState.data ?: emptyList()
                         Log.v("SearchGridVM", "onRecentPhotos updating data: ${_photos.value.size}")
@@ -164,5 +167,11 @@ class SearchGridViewModel
 
             }.launchIn(viewModelScope)
         }
+    }
+
+    private fun appendPhotos(_photos: List<Photo>){
+        val current = ArrayList(this._photos.value)
+        current.addAll(_photos)
+        this._photos.value = current
     }
 }
