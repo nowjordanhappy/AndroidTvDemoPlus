@@ -36,7 +36,7 @@ dependencies {
     implementation(AndroidX.activity)
     implementation(AndroidX.constraintLayout)
     implementation(Leanback.leanback)
-    implementation("com.github.bumptech.glide:glide:4.11.0")
+    implementation(Glide.glide)
 
     implementation(DaggerHilt.hiltAndroid)
     kapt(DaggerHilt.hiltAndroidCompiler)

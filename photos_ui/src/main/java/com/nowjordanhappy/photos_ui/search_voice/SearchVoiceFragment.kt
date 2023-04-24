@@ -1,4 +1,4 @@
-package com.nowjordanhappy.photos_ui.search
+package com.nowjordanhappy.photos_ui.search_voice
 
 import android.Manifest
 import android.app.Activity
@@ -6,19 +6,24 @@ import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.SearchSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.ObjectAdapter
+import androidx.navigation.fragment.findNavController
 import com.nowjordanhappy.core_ui.PermissionsHandler
+import com.nowjordanhappy.photos_ui.search.SearchEvent
+import com.nowjordanhappy.photos_ui.search.SearchGridViewModel
 
-class SearchFragment: SearchSupportFragment(),
+class SearchVoiceFragment: SearchSupportFragment(),
     SearchSupportFragment.SearchResultProvider{
 
     private lateinit var mRowsAdapter: ArrayObjectAdapter
 
-    private val viewModel by viewModels<SearchViewModel>()
+    private val viewModel by viewModels<SearchVoiceViewModel>()
 
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -27,7 +32,6 @@ class SearchFragment: SearchSupportFragment(),
             }
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,32 +67,27 @@ class SearchFragment: SearchSupportFragment(),
     }
 
     override fun onQueryTextChange(newQuery: String?): Boolean {
+        Log.v("SearchVoice", "onQueryTextChange: $newQuery")
         return true
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        viewModel.onEvent(SearchEvent.OnChangeQuery(query ?: ""))
+        Log.v("SearchVoice", "onQueryTextSubmit: $query")
+        viewModel.onEvent(SearchVoiceEvent.OnChangeQuery(query ?: ""))
+
+        if(!query.isNullOrBlank()){
+            setFragmentResult(
+                "searchVoice",
+                bundleOf("query" to query)
+            )
+            findNavController().popBackStack()
+        }
 
         return true
     }
 
-    /*override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = SearchFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }*/
 
     companion object {
-        private val TAG = SearchFragment::class.java.simpleName
-        private const val REQUEST_SPEECH = 13
+        private val TAG = SearchVoiceFragment::class.java.simpleName
     }
 }

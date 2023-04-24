@@ -4,7 +4,6 @@ import android.net.ConnectivityManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nowjordanhappy.core_ui.domain.UIComponent
-import com.nowjordanhappy.photos_domain.use_case.SearchPhotos
 import com.nowjordanhappy.photos_domain.data.DataState
 import com.nowjordanhappy.photos_domain.use_case.PhotoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel
+class SearchGridViewModel
     @Inject constructor(
         private val photosUseCases: PhotoUseCases,
         private val connectivityManager: ConnectivityManager,
@@ -35,7 +34,16 @@ class SearchViewModel
             SearchEvent.OnNextPage -> {
                 onNextPage()
             }
+            is SearchEvent.OnChangeGridMode -> {
+                onChangeGridMode(event)
+            }
         }
+    }
+
+    private fun onChangeGridMode(event: SearchEvent.OnChangeGridMode) {
+        _state.value = _state.value.copy(
+            gridModeOn = event.gridModeOn
+        )
     }
 
     private fun onChangeQuery(event: SearchEvent.OnChangeQuery){

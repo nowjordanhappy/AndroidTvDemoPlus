@@ -4,4 +4,5 @@ sealed class SearchEvent{
     data class OnChangeQuery(val query: String): SearchEvent()
     object OnSearch: SearchEvent()
     object OnNextPage: SearchEvent()
+    data class OnChangeGridMode(val gridModeOn: Boolean): SearchEvent()
 }

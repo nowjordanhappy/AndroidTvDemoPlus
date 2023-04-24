@@ -10,4 +10,5 @@ dependencies {
     "implementation"(project(Modules.photosData))
 
     "implementation"(Coil.coilKotlin)
+    "implementation"(Glide.glide)
 }

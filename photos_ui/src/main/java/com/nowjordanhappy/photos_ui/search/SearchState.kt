@@ -10,4 +10,5 @@ data class SearchState (
     val query: String = "",
     val page: Int = 1,
     val pageSize: Int = Constants.RECIPE_PAGINATION_PAGE_SIZE,
+    val gridModeOn: Boolean = false
 )

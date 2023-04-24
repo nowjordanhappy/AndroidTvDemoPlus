@@ -1,4 +1,9 @@
 <resources>
 
-    <style name="Theme.AndroidTvDemoPlus" parent="@style/Theme.Leanback" />
+    <style name="Theme.AndroidTvDemoPlus" parent="@style/Theme.Leanback" >
+        <!--<item name="browseTitleViewLayout">@layout/row_title</item>-->
+        <item name="browseTitleViewLayout">@layout/title_view</item>
+        <item name="browseRowsMarginTop">200dp</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
 </resources>
