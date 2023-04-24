@@ -1,5 +1,5 @@
 apply{
-    from("$rootDir/compose-module.gradle")
+    from("$rootDir/xml-module.gradle")
 }
 
 dependencies {

@@ -14,7 +14,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "AndroidTvDemoPlus"
 include ':app'
-include ':photos'
 include ':core'
 include ':photos_ui'
 include ':core_ui'
+include ':photos_data'
+include ':photos_domain'

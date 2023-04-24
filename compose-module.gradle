@@ -18,9 +18,9 @@ android {
     buildFeatures {
         compose true
     }
-    /*composeOptions {
+    composeOptions {
         kotlinCompilerExtensionVersion Compose.composeCompilerVersion
-    }*/
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -39,13 +39,13 @@ android {
 }
 
 dependencies {
-    /*implementation Compose.compiler
-    implementation Compose.ui
+    implementation Compose.compiler
+    implementation Compose.runtime
+    /*implementation Compose.ui
     debugImplementation Compose.uiTooling
     implementation Compose.uiToolingPreview
     implementation Compose.hiltNavigationCompose
     implementation Compose.material
-    implementation Compose.runtime
     implementation Compose.navigation
     implementation Compose.viewModelCompose
     implementation Compose.viewModelKtx

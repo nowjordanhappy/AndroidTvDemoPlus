@@ -4,8 +4,9 @@ import android.net.ConnectivityManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nowjordanhappy.core_ui.domain.UIComponent
-import com.nowjordanhappy.photos.domain.data.DataState
-import com.nowjordanhappy.photos.domain.use_case.SearchPhotos
+import com.nowjordanhappy.photos_domain.use_case.SearchPhotos
+import com.nowjordanhappy.photos_domain.data.DataState
+import com.nowjordanhappy.photos_domain.use_case.PhotoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel
     @Inject constructor(
-        private val searchPhotos: SearchPhotos,
+        private val photosUseCases: PhotoUseCases,
         private val connectivityManager: ConnectivityManager,
 ) : ViewModel(){
     private val _state = MutableStateFlow(SearchState())
@@ -52,7 +53,7 @@ class SearchViewModel
 
     private fun onSearch() {
         viewModelScope.launch {
-            searchPhotos.execute(
+            photosUseCases.searchPhotos.execute(
                 query = _state.value.query,
                 page = _state.value.page,
                 pageSize = _state.value.pageSize,
