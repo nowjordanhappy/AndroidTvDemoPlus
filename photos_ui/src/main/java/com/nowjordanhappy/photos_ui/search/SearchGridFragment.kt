@@ -17,6 +17,7 @@ import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nowjordanhappy.core_ui.domain.ProgressBarState
@@ -25,9 +26,11 @@ import com.nowjordanhappy.photos_ui.R
 import com.nowjordanhappy.photos_ui.search.components.CardPresenter
 import com.nowjordanhappy.photos_ui.search.components.CustomTitleView
 import com.nowjordanhappy.photos_ui.search.components.CustomVerticalGridPresenter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SearchGridFragment: VerticalGridSupportFragment() {
     private val viewModel by activityViewModels<SearchGridViewModel>()
 
@@ -126,7 +129,10 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     }
 
     private fun showError(message: String) {
-        findNavController().navigate(R.id.errorFragment, bundleOf("message" to message))
+        //findNavController().navigate(R.id.errorFragment, bundleOf("message" to message), )
+        //findNavController().navigate(R.id.errorFragment, bundleOf("message" to message), )
+        val action = SearchGridFragmentDirections.actionSearchGridFragmentToErrorFragment(message+"12")
+        findNavController().navigate(action)
     }
 
     private fun updateSubtitle(subtitle: String){

@@ -13,7 +13,12 @@
     <fragment
         android:id="@+id/searchGridFragment"
         android:name="com.nowjordanhappy.photos_ui.search.SearchGridFragment"
-        android:label="SearchGridFragment" />
+        android:label="SearchGridFragment" >
+
+        <action
+            android:id="@+id/action_searchGridFragment_to_errorFragment"
+            app:destination="@id/errorFragment" />
+    </fragment>
 
     <dialog
         android:id="@+id/spinnerFragment"
@@ -22,7 +27,13 @@
     <fragment
         android:id="@+id/errorFragment"
         android:name="com.nowjordanhappy.photos_ui.error.ErrorFragment"
-        android:label="ErrorFragment" />
+        android:label="ErrorFragment" >
+        <argument
+            android:name="message"
+            app:argType="string"
+            app:nullable="false"
+            android:defaultValue="Unknown Error"/>
+    </fragment>
     <fragment
         android:id="@+id/detailPhotoFragment"
         android:name="com.nowjordanhappy.photos_ui.detail_photo.DetailPhotoFragment"

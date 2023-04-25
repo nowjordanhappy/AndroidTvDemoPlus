@@ -6,4 +6,8 @@
         <item name="browseRowsMarginTop">200dp</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
+
+    <style name="Theme.AndroidTvDemoPlus2" parent="@style/Theme.AppCompat" >
+        <item name="android:windowBackground">@color/background</item>
+    </style>
 </resources>
