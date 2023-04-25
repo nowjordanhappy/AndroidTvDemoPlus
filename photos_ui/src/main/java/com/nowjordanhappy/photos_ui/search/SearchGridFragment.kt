@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.clearFragmentResultListener
@@ -74,6 +75,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 }
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
                 viewModel.progressBarState.collect{ progressBarState->
@@ -173,17 +175,9 @@ class SearchGridFragment: VerticalGridSupportFragment() {
         onItemViewClickedListener =
             OnItemViewClickedListener { itemViewHolder, item, rowViewHolder, row ->
                 if (item is Photo) {
-                    /*viewModel.selectPhoto = item
+                    viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
 
-                    if (item.server != null && item.id != null && item.secret != null){
-                        val intent = Intent(requireContext(), PhotoActivity::class.java)
-                        intent.putExtra("server", item.server)
-                        intent.putExtra("id", item.id)
-                        intent.putExtra("secret", item.secret)
-                        startActivity(intent)
-                    }else{
-                        Toast.makeText(requireContext(), "Some data is missing for the item", Toast.LENGTH_SHORT).show()
-                    }*/
+                    findNavController().navigate(R.id.detailPhotoFragment)
                 }
             }
 

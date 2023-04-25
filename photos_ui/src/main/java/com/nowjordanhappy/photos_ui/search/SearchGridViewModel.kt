@@ -7,7 +7,6 @@ import com.nowjordanhappy.core.Constants
 import com.nowjordanhappy.core_ui.ScreenHelper
 import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.core_ui.domain.UIComponent
-import com.nowjordanhappy.core_ui.utils.UiEvent
 import com.nowjordanhappy.photos_domain.data.DataState
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_domain.use_case.PhotoUseCases
@@ -57,6 +56,9 @@ class SearchGridViewModel
     private val _listSearchType: MutableStateFlow<ListSearchType> = MutableStateFlow(ListSearchType.Recent)
     val listSearchType = _listSearchType.asStateFlow()
 
+    private val _selectedPhoto: MutableStateFlow<Photo?> = MutableStateFlow(null)
+    val selectedPhoto = _selectedPhoto.asStateFlow()
+
     private val _uiEvent = Channel<SearchGridUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -82,7 +84,14 @@ class SearchGridViewModel
             is SearchEvent.OnChangeGridMode -> {
                 onChangeGridMode(event)
             }
+            is SearchEvent.OnSelectPhoto -> {
+                onSelectPhoto(event)
+            }
         }
+    }
+
+    private fun onSelectPhoto(event: SearchEvent.OnSelectPhoto) {
+        _selectedPhoto.value = event.photo
     }
 
     private fun onChangeGridMode(event: SearchEvent.OnChangeGridMode) {

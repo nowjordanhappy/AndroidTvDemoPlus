@@ -23,6 +23,10 @@
         android:id="@+id/errorFragment"
         android:name="com.nowjordanhappy.photos_ui.error.ErrorFragment"
         android:label="ErrorFragment" />
+    <fragment
+        android:id="@+id/detailPhotoFragment"
+        android:name="com.nowjordanhappy.photos_ui.detail_photo.DetailPhotoFragment"
+        android:label="DetailPhotoFragment" />
 
 
 </navigation>
