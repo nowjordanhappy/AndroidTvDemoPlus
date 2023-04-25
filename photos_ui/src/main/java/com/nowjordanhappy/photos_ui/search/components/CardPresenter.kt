@@ -84,10 +84,9 @@ class CardPresenter(
         if (photo.imageUrl != null) {
 
             //Log.d(TAG, "onBindViewHolder url: $url - isSizeSetted: ${photo.isSizeSetted}")
-
             cardView.minimumWidth = width
 
-            Log.d(TAG, "onBindViewHolder gridModeOn: $gridModeOn - width: $width - height: $height")
+            //Log.d(TAG, "onBindViewHolder gridModeOn: $gridModeOn - width: $width - height: $height")
             if(gridModeOn){
                 Glide.with(cardView.context)
                     .load(photo.imageUrl)
@@ -110,10 +109,7 @@ class CardPresenter(
                             bitmap: Bitmap,
                             transition: Transition<in Bitmap>?
                         ) {
-                            Log.v(
-                                TAG,
-                                "viewholder width: ${bitmap.width} - height: ${bitmap.height}"
-                            )
+                            //Log.v(TAG, "viewholder width: ${bitmap.width} - height: ${bitmap.height}")
                             cardView.setMainImage(
                                 BitmapDrawable(
                                     cardView.context.resources,
@@ -123,8 +119,7 @@ class CardPresenter(
 
                             val newWidth = bitmap.width
                             val newHeight = bitmap.height
-                            photo.isSizeSetted
-                            Log.v(TAG, "viewholder width: ${newWidth} - height: ${newHeight}")
+                            //Log.v(TAG, "viewholder width: ${newWidth} - height: ${newHeight}")
                             //cardView.setMainImageDimensions(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                             cardView.setMainImageDimensions(

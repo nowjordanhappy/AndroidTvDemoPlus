@@ -20,8 +20,12 @@ import com.bumptech.glide.request.transition.Transition
 import com.nowjordanhappy.core_ui.ScreenHelper
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_ui.detail_photo.components.DetailsDescriptionPresenter
+import com.nowjordanhappy.photos_ui.search.SearchEvent
+import com.nowjordanhappy.photos_ui.search.SearchGridFragment
 import com.nowjordanhappy.photos_ui.search.SearchGridViewModel
 import com.nowjordanhappy.photos_ui.search.components.CustomTitleView
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -39,6 +43,8 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
     private var mDefaultBackground: Drawable? = null
 
     private lateinit var mRowsAdapter: ArrayObjectAdapter
+
+    var job: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mDetailsBackground = DetailsSupportFragmentBackgroundController(this)
@@ -63,12 +69,12 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
                 viewModel.selectedPhoto.collect{ selectedPhoto->
-                    initializeBackground(selectedPhoto?.imageUrl)
+                    initializeBackground(selectedPhoto.photo?.imageUrl)
                 }
             }
         }
 
-        val rowPresenter: FullWidthDetailsOverviewRowPresenter =
+        /*val rowPresenter: FullWidthDetailsOverviewRowPresenter =
             object : FullWidthDetailsOverviewRowPresenter(
                 DetailsDescriptionPresenter(width = ScreenHelper.getScreenWidth(), height = ScreenHelper.getScreenHeight())
             ) {
@@ -118,7 +124,37 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
         detailsOverview.actionsAdapter = actionAdapter;
         mRowsAdapter.add(detailsOverview);
 
-        adapter = mRowsAdapter
+        adapter = mRowsAdapter*/
+
+        startUpdates()
+    }
+
+    fun startUpdates() {
+        stopUpdates()
+        job = viewLifecycleOwner.lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                // this block is automatically executed when moving into
+                // the started state, and cancelled when stopping.
+                while (true) {
+                    viewModel.selectedPhoto.value.photo?.let { photo->
+                        val index = viewModel.selectedPhoto.value.index
+                        Log.v("Detail", "current index selected: $index")
+                        if(index > -1){
+                            viewModel.photoList.value.photos.getOrNull(index+1)?.let { next->
+                                Log.v("Detail", "next: ${index+1} - ${photo.dateUpload} - ${photo.title}")
+                                viewModel.onEvent(SearchEvent.OnSelectPhoto(next))
+                            }
+                        }
+                    }
+                    delay(2000)
+                }
+            }
+        }
+    }
+
+    fun stopUpdates() {
+        job?.cancel()
+        job = null
     }
 
     private fun setupCustomTitleView(){
@@ -138,7 +174,7 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
     private fun initializeBackground(imageUrl: String?) {
         Log.v("Detailphoto", "initializeBackground")
         mDetailsBackground.enableParallax()
-        /*Glide.with(requireContext())
+        Glide.with(requireContext())
             .asBitmap()
             .centerCrop()
             .error(com.nowjordanhappy.core_ui.R.drawable.default_background)
@@ -150,7 +186,7 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
                 ) {
                     mBackgroundManager.setBitmap(bitmap)
                 }
-            })*/
+            })
 
     }
 

@@ -5,20 +5,29 @@ import android.util.Log
 import android.view.View
 
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.leanback.app.ErrorSupportFragment
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import com.nowjordanhappy.photos_ui.search.SearchGridViewModel
 import com.nowjordanhappy.photos_ui.search.components.CustomTitleView
+import kotlinx.coroutines.launch
 
 /**
  * This class demonstrates how to extend [ErrorSupportFragment].
  */
 class ErrorFragment : ErrorSupportFragment() {
+    private val viewModel by activityViewModels<ErrorViewModel>()
 
     private var myCustomTitleView: CustomTitleView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = resources.getString(com.nowjordanhappy.core_ui.R.string.app_name)
+
+        viewModel.viewModelScope.launch {
+
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

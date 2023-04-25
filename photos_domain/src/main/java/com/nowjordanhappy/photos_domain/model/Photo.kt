@@ -11,6 +11,5 @@ data class Photo (
     val isFamily: Boolean,
     val dateUpload: String,
     val ownername: String,
-    var isSizeSetted: Boolean = false,
     val dateSaved: Long
 )

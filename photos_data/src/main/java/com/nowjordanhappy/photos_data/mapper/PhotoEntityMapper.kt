@@ -18,10 +18,17 @@ class PhotoEntityMapper: DomainMapper<PhotoEntity, Photo> {
             title = model.title,
             isPublic = model.isPublic,
             isFamily = model.isFamily,
-            dateUpload = DateUtils.dateToString(DateUtils.longToDate(model.dateUpload)),
+            dateUpload = DateUtils.dateToString(DateUtils.longToDate(model.dateUpload*1000)),
             ownername = model.ownername,
             dateSaved = model.dateSaved
         )
+    }
+
+    private fun getDateUpload(dateUpload: Long): String {
+        val longToDate = DateUtils.longToDate(dateUpload)
+        val dateToString = DateUtils.dateToString(longToDate)
+        //Log.v("PhotoEntityMapper", "dateUpload: $dateUpload - longToDate: ${longToDate} - dateToString: ${dateToString}")
+        return dateToString
     }
 
     override fun mapFromDomainModel(domainModel: Photo): PhotoEntity {

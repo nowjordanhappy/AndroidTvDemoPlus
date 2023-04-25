@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
@@ -17,12 +18,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_ui.R
 import com.nowjordanhappy.photos_ui.search.components.CardPresenter
 import com.nowjordanhappy.photos_ui.search.components.CustomTitleView
 import com.nowjordanhappy.photos_ui.search.components.CustomVerticalGridPresenter
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class SearchGridFragment: VerticalGridSupportFragment() {
@@ -35,6 +38,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
 
     private var myCustomTitleView: CustomTitleView? = null
 
+    private var isOnPause = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupFragment()
@@ -49,6 +53,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     }
 
     private fun setParams(){
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
                 viewModel.uiEvent.collect{ uiEvent->
@@ -93,10 +98,35 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                viewModel.selectedPhoto.collect{ selectedPhoto->
+                    selectedPhoto.photo?.let { photo ->
+                        Log.v(TAG, "index: ${selectedPhoto.index} - ${photo.dateUpload} - ${photo.title} - isOnPause: $isOnPause")
+                        if(selectedPhoto.index > -1){
+                            if(isOnPause){
+                                isOnPause = false
+                                Log.v(TAG, "before setSelectedPosition")
+                                //setSelectedPosition(selectedPhoto.index)
+                                Log.v(TAG, "after setSelectedPosition: ${selectedPhoto.index}")
+                            }
+                            //adapter.getPresenter(photo)
+                            //mGridViewHolder.gridView.getChildAt(index).requestFocus()
+                            //adapter.presenterSelector.getPresenter(photo)
+                            //setSelectedPosition(index)
+                            /*val rowViewHolder = getRowViewHolder(rowIndex)
+                            val horizontalGridView = (rowViewHolder as ListRowPresenter.ViewHolder).gridView
+                            horizontalGridView.setSelectedPosition(cardPos)*/
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun showError(message: String) {
-        findNavController().navigate(R.id.errorFragment)
+        findNavController().navigate(R.id.errorFragment, bundleOf("message" to message))
     }
 
     private fun updateSubtitle(subtitle: String){
@@ -175,15 +205,20 @@ class SearchGridFragment: VerticalGridSupportFragment() {
         onItemViewClickedListener =
             OnItemViewClickedListener { itemViewHolder, item, rowViewHolder, row ->
                 if (item is Photo) {
-                    viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
-
+                    //viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
+                    Log.v(TAG, "OnItemViewClickedListener: ${item.dateUpload} - ${item.title} - isOnPause: $isOnPause")
                     findNavController().navigate(R.id.detailPhotoFragment)
+                    isOnPause = true
                 }
             }
 
+
         setOnItemViewSelectedListener { itemViewHolder, item, rowViewHolder, row ->
             if (item is Photo) {
+                Log.v(TAG, "setOnItemViewSelectedListener: ${item.dateUpload} - ${item.title} - isOnPause: $isOnPause")
                 mAdapter?.let { adat->
+                    viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
+                    //setSelectedPosition()
                     adat.indexOf(item).let { position ->
                         if(position != -1){
                             Log.v(TAG, "onItemClicked position: $position")

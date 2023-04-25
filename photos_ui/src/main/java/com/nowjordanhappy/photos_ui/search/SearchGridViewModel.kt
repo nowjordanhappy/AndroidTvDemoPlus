@@ -56,7 +56,7 @@ class SearchGridViewModel
     private val _listSearchType: MutableStateFlow<ListSearchType> = MutableStateFlow(ListSearchType.Recent)
     val listSearchType = _listSearchType.asStateFlow()
 
-    private val _selectedPhoto: MutableStateFlow<Photo?> = MutableStateFlow(null)
+    private val _selectedPhoto: MutableStateFlow<PhotoSelected> = MutableStateFlow(PhotoSelected())
     val selectedPhoto = _selectedPhoto.asStateFlow()
 
     private val _uiEvent = Channel<SearchGridUiEvent>()
@@ -91,7 +91,11 @@ class SearchGridViewModel
     }
 
     private fun onSelectPhoto(event: SearchEvent.OnSelectPhoto) {
-        _selectedPhoto.value = event.photo
+        val index = _photoList.value.photos.indexOf(event.photo)
+        _selectedPhoto.value = _selectedPhoto.value.copy(
+            photo = event.photo,
+            index = index
+        )
     }
 
     private fun onChangeGridMode(event: SearchEvent.OnChangeGridMode) {
