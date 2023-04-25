@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.leanback.app.*
 import androidx.leanback.widget.*
 import androidx.leanback.widget.ListRow
@@ -33,7 +34,7 @@ import kotlinx.coroutines.launch
  * Loads a grid of cards with movies to browse.
  */
 class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener {
-    private val viewModel by activityViewModels<SearchGridViewModel>()
+    private val viewModel: SearchGridViewModel by activityViewModels()
 
     private var myCustomTitleView: CustomTitleView? = null
 

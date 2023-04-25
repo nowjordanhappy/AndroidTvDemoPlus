@@ -15,15 +15,12 @@ import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.ObjectAdapter
 import androidx.navigation.fragment.findNavController
 import com.nowjordanhappy.core_ui.PermissionsHandler
-import com.nowjordanhappy.photos_ui.search.SearchEvent
-import com.nowjordanhappy.photos_ui.search.SearchGridViewModel
 
 class SearchVoiceFragment: SearchSupportFragment(),
     SearchSupportFragment.SearchResultProvider{
 
     private lateinit var mRowsAdapter: ArrayObjectAdapter
-
-    private val viewModel by viewModels<SearchVoiceViewModel>()
+    private val viewModel: SearchVoiceViewModel by viewModels()
 
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {

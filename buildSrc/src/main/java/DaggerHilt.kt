@@ -6,4 +6,7 @@ object DaggerHilt {
     const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:$version"
     private const val hiltNavFragmentVersion = "1.0.0"
     const val hiltNavFragment = "androidx.hilt:hilt-navigation-fragment:$hiltNavFragmentVersion"
+
+    private const val hiltLifecycleVMVersion = "1.0.0-alpha034"
+    const val hiltLifecycleVM = "androidx.hilt:hilt-lifecycle-viewmodel:$hiltLifecycleVMVersion"
 }

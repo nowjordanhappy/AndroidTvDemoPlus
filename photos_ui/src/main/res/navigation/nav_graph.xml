@@ -17,7 +17,8 @@
 
         <action
             android:id="@+id/action_searchGridFragment_to_errorFragment"
-            app:destination="@id/errorFragment" />
+            app:destination="@id/errorFragment"
+            />
     </fragment>
 
     <dialog
@@ -27,7 +28,7 @@
     <fragment
         android:id="@+id/errorFragment"
         android:name="com.nowjordanhappy.photos_ui.error.ErrorFragment"
-        android:label="ErrorFragment" >
+        android:label="ErrorFragment">
         <argument
             android:name="message"
             app:argType="string"

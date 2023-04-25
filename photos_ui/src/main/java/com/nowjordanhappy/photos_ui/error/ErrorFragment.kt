@@ -6,8 +6,10 @@ import android.view.View
 
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.leanback.app.ErrorSupportFragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
@@ -25,11 +27,12 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class ErrorFragment : ErrorSupportFragment() {
-    private val viewModel by activityViewModels<ErrorViewModel>()
+    //private val viewModel by activityViewModels<ErrorViewModel>()
+    private val viewModel :ErrorViewModel by viewModels()
 
     private var myCustomTitleView: CustomTitleView? = null
 
-    val args: ErrorFragmentArgs by navArgs()
+    private val args: ErrorFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +43,7 @@ class ErrorFragment : ErrorSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.v("ErrorFragment", "args.message: ${args.message} - vm: ${viewModel.message}")
-        viewModel.onEvent(ErrorEvent.OnSetError(args.message))
+        //viewModel.onEvent(ErrorEvent.OnSetError(args.message))
         setParams()
     }
 

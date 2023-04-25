@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
@@ -32,7 +33,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchGridFragment: VerticalGridSupportFragment() {
-    private val viewModel by activityViewModels<SearchGridViewModel>()
+    //private val viewModel by activityViewModels<SearchGridViewModel>()
+    private val viewModel: SearchGridViewModel by activityViewModels()
 
     private var mAdapter: ArrayObjectAdapter? = null
 
@@ -107,21 +109,15 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 viewModel.selectedPhoto.collect{ selectedPhoto->
                     selectedPhoto.photo?.let { photo ->
                         Log.v(TAG, "index: ${selectedPhoto.index} - ${photo.dateUpload} - ${photo.title} - isOnPause: $isOnPause")
-                        if(selectedPhoto.index > -1){
+                        setSelectedPosition(selectedPhoto.index)
+                        /*if(selectedPhoto.index > -1){
                             if(isOnPause){
                                 isOnPause = false
                                 Log.v(TAG, "before setSelectedPosition")
                                 //setSelectedPosition(selectedPhoto.index)
                                 Log.v(TAG, "after setSelectedPosition: ${selectedPhoto.index}")
                             }
-                            //adapter.getPresenter(photo)
-                            //mGridViewHolder.gridView.getChildAt(index).requestFocus()
-                            //adapter.presenterSelector.getPresenter(photo)
-                            //setSelectedPosition(index)
-                            /*val rowViewHolder = getRowViewHolder(rowIndex)
-                            val horizontalGridView = (rowViewHolder as ListRowPresenter.ViewHolder).gridView
-                            horizontalGridView.setSelectedPosition(cardPos)*/
-                        }
+                        }*/
                     }
                 }
             }
@@ -131,8 +127,13 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     private fun showError(message: String) {
         //findNavController().navigate(R.id.errorFragment, bundleOf("message" to message), )
         //findNavController().navigate(R.id.errorFragment, bundleOf("message" to message), )
-        val action = SearchGridFragmentDirections.actionSearchGridFragmentToErrorFragment(message+"12")
-        findNavController().navigate(action)
+        /*val action = SearchGridFragmentDirections.actionSearchGridFragmentToErrorFragment(message+"12")
+        findNavController().navigate(action)*/
+
+        val bundle = Bundle().apply {
+            putString("message", message)
+        }
+        findNavController().navigate(R.id.action_searchGridFragment_to_errorFragment, bundle)
     }
 
     private fun updateSubtitle(subtitle: String){

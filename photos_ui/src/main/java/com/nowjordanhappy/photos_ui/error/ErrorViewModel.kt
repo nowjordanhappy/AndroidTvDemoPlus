@@ -24,6 +24,7 @@ class ErrorViewModel @Inject constructor(
     init {
         val message = state.get<String>("message") ?: "Unknown Error"
         Log.v("ErrorViewModel", "message: $message - new: ${args.message}")
+        onEvent(ErrorEvent.OnSetError(message))
     }
 
     fun onEvent(event: ErrorEvent.OnSetError){
