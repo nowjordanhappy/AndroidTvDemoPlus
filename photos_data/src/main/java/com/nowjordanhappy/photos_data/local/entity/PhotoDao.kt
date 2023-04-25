@@ -22,7 +22,7 @@ interface PhotoDao {
 
     @Query("""
         SELECT * FROM photo 
-        ORDER BY date_upload DESC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
+        ORDER BY date_upload ASC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
     """)
     suspend fun getAllRecipes(
         page: Int,
@@ -33,7 +33,7 @@ interface PhotoDao {
         SELECT * FROM photo 
         WHERE title LIKE '%' || :query || '%'
         OR ownername LIKE '%' || :query || '%'  
-        ORDER BY date_upload DESC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
+        ORDER BY date_saved ASC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
         """)
     suspend fun searchRecipes(
         query: String,
@@ -44,7 +44,7 @@ interface PhotoDao {
     @Query("""
         SELECT * FROM photo 
         WHERE is_public = 1 
-        ORDER BY date_upload DESC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
+        ORDER BY date_saved ASC LIMIT :pageSize OFFSET ((:page - 1) * :pageSize)
         """)
     suspend fun getRecentRecipes(
         page: Int,

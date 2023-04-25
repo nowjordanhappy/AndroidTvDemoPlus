@@ -1,5 +1,6 @@
 package com.nowjordanhappy.photos_data.repository
 
+import android.util.Log
 import com.nowjordanhappy.core.Constants
 import com.nowjordanhappy.core.domain.StatResponse
 import com.nowjordanhappy.photos_data.local.entity.PhotoDao
@@ -74,7 +75,13 @@ class PhotoRepositoryImpl(
             pageSize = pageSize,
         )
 
-        photoDao.insertPhotos(photos.map { entityMapper.mapFromDomainModel(it) })
+        /*if(page == 1){
+            photoDao.deleteAllPhotos()
+        }*/
+
+        val list = photos.map { entityMapper.mapFromDomainModel(it) }
+        photoDao.insertPhotos(list)
+
         return photos
     }
 
@@ -93,6 +100,7 @@ class PhotoRepositoryImpl(
             nojsoncallback = Constants.API_NOJSONCALLBACK,
         )
 
+
         return if (response.stat == StatResponse.ok.name) {
             (response.photos?.photo ?: emptyList())
                 .mapNotNull {dto->
@@ -109,6 +117,7 @@ class PhotoRepositoryImpl(
             page = page
         )
 
+        val list = localPhotos.map { entityMapper.mapToDomainModel(it) }
         return localPhotos.map { entityMapper.mapToDomainModel(it) }
     }
 

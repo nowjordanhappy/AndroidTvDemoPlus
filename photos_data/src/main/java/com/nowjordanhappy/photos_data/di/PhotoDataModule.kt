@@ -53,7 +53,9 @@ object PhotoDataModule {
             app,
             AppDatabase::class.java,
             "photo_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

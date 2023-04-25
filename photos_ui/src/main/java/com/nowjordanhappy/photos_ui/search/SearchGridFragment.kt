@@ -1,11 +1,9 @@
 package com.nowjordanhappy.photos_ui.search
 
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.clearFragmentResultListener
@@ -17,9 +15,7 @@ import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.nowjordanhappy.core_ui.ScreenHelper
 import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_ui.R
@@ -32,10 +28,6 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     private val viewModel by activityViewModels<SearchGridViewModel>()
 
     private var mAdapter: ArrayObjectAdapter? = null
-
-    private val gridWidth = (ScreenHelper.getScreenWidth() * 0.95).toInt()
-    private val cartWidth = (0.8 * ScreenHelper.getScreenWidth() / NUM_COLUMNS).toInt()
-    private val cardHeight = (cartWidth * 0.6).toInt()
 
     private lateinit var mBackgroundManager: BackgroundManager
     private var mDefaultBackground: Drawable? = null
@@ -58,17 +50,27 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     private fun setParams(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
-                viewModel.gridModeOn.collect{ gridModeOn->
-                    updateGridMode(gridModeOn)
+                viewModel.uiEvent.collect{ uiEvent->
+                    when(uiEvent){
+                        is SearchGridUiEvent.ShowError -> {
+                            Log.v(TAG, "ShowError: ${uiEvent.message}")
+                            showError(uiEvent.message)
+                        }
+                        SearchGridUiEvent.SuccessSearch -> {
+                            updateSubtitle(String.format(getString(com.nowjordanhappy.core_ui.R.string.format_search_query), viewModel.query.value))
+                        }
+                    }
                 }
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
-                viewModel.photos.collect{ photos->
-                    Log.v("SearchGridVM", "onRecentPhotos Fragment photos: ${photos.size}")
-                    updateData(photos)
+                viewModel.photoList.collect{ photoList->
+                    Log.v("SearchGridVM", "onRecentPhotos Fragment photos: ${photoList.photos.size} - gridOn: ${photoList.gridModeOn}")
+                    //Reload data
+                    mAdapter = null
+                    updateData(photoList.photos)
                 }
             }
         }
@@ -91,6 +93,14 @@ class SearchGridFragment: VerticalGridSupportFragment() {
         }
     }
 
+    private fun showError(message: String) {
+        findNavController().navigate(R.id.errorFragment)
+    }
+
+    private fun updateSubtitle(subtitle: String){
+        myCustomTitleView?.setSubtitle(subtitle)
+    }
+
     private fun updateData(photos: List<Photo>) {
         Log.v(TAG, "updateData")
         setInformation(isEmpty = photos.isEmpty())
@@ -98,9 +108,6 @@ class SearchGridFragment: VerticalGridSupportFragment() {
         photos.forEach {
             mAdapter?.add(it)
         }
-    }
-
-    private fun updateGridMode(gridModeOn: Boolean){
     }
 
     private fun setInformation(isEmpty: Boolean){
@@ -126,9 +133,9 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     private fun setupFragment() {
 
         val gridPresenter = CustomVerticalGridPresenter(
-            width = gridWidth
+            width = viewModel.gridWidth
         )
-        gridPresenter.numberOfColumns = NUM_COLUMNS
+        gridPresenter.numberOfColumns = viewModel.numColumns
         gridPresenter.shadowEnabled = true
         setGridPresenter(gridPresenter)
 
@@ -144,7 +151,8 @@ class SearchGridFragment: VerticalGridSupportFragment() {
         }
 
         if(shouldInitializeAdapter){
-            mAdapter = ArrayObjectAdapter(CardPresenter(cartWidth, cardHeight, gridModeOn = viewModel.state.value.gridModeOn))
+            //mAdapter = ArrayObjectAdapter(CardPresenter(cartWidth, cardHeight, gridModeOn = false))//viewModel.state.value.gridModeOn))
+            mAdapter = ArrayObjectAdapter(CardPresenter(viewModel.cartWidth, viewModel.cardHeight, gridModeOn = viewModel.photoList.value.gridModeOn))
             adapter = mAdapter
         }
     }
@@ -186,8 +194,8 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                         if(position != -1){
                             Log.v(TAG, "onItemClicked position: $position")
                             //tryToFetchData(position)
-                            val mCurrentTotal = viewModel.photos.value.size
-                            val lasPosition = kotlin.math.min(mCurrentTotal - 1, mCurrentTotal - MAX_LAST_RANGE - 1)
+                            val currentTotal = viewModel.photoList.value.photos.size
+                            val lasPosition = kotlin.math.min(currentTotal - 1, currentTotal - viewModel.maxListRange - 1)
 
                             if(lasPosition > -1 && position >= lasPosition){
                                 viewModel.onEvent(SearchEvent.OnNextPage)
@@ -201,11 +209,5 @@ class SearchGridFragment: VerticalGridSupportFragment() {
 
     companion object {
         private val TAG = SearchGridFragment::class.java.simpleName
-        private const val NUM_COLUMNS = 3
-        private const val REQUEST_SEARCH = 13
-        private const val REQUEST_ERROR = 14
-        private const val MAX_LAST_RANGE = 3 //Get in last 3 items
-        private const val LOADING_ITEMS_COUNT = 6
-        private const val IS_SIZE_ITEM_FIXED = false
     }
 }

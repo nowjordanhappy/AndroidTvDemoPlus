@@ -26,5 +26,7 @@ data class PhotoEntity (
     @ColumnInfo(name = "date_upload")
     val dateUpload: Long,
     @ColumnInfo(name = "ownername")
-    val ownername: String
+    val ownername: String,
+    @ColumnInfo(name = "date_saved")
+    val dateSaved: Long,
     )

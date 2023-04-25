@@ -32,6 +32,10 @@ class CardPresenter(
     private var sDefaultBackgroundColor: Int by Delegates.notNull()
 
     private var defaultDateString = "No Date"
+
+    init {
+        Log.d(TAG, "onBindViewHolder gridModeOn: $gridModeOn  init")
+    }
     override fun onCreateViewHolder(parent: ViewGroup): Presenter.ViewHolder {
         Log.d(TAG, "onCreateViewHolder")
         sDefaultBackgroundColor = ContextCompat.getColor(
@@ -74,7 +78,7 @@ class CardPresenter(
 
         val date = photo.dateUpload
         cardView.titleText = photo.title
-        cardView.contentText = "${photo.ownername ?: "Anonymous owner"} / $date"
+        cardView.contentText = "${photo.ownername} / $date"
         cardView.setMainImageDimensions(width, height)
 
         if (photo.imageUrl != null) {
@@ -83,6 +87,7 @@ class CardPresenter(
 
             cardView.minimumWidth = width
 
+            Log.d(TAG, "onBindViewHolder gridModeOn: $gridModeOn - width: $width - height: $height")
             if(gridModeOn){
                 Glide.with(cardView.context)
                     .load(photo.imageUrl)
@@ -90,6 +95,11 @@ class CardPresenter(
                     .placeholder(com.nowjordanhappy.core_ui.R.drawable.placeholder_background)
                     .error(mDefaultCardImage)
                     .into(cardView.mainImageView)
+
+                /*cardView.setMainImageDimensions(
+                    width,
+                    height
+                )*/
             }else{
                 Glide.with(cardView.context)
                     .asBitmap()

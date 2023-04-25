@@ -4,13 +4,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nowjordanhappy.core.Constants
+import com.nowjordanhappy.core_ui.ScreenHelper
 import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.core_ui.domain.UIComponent
+import com.nowjordanhappy.core_ui.utils.UiEvent
 import com.nowjordanhappy.photos_domain.data.DataState
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_domain.use_case.PhotoUseCases
 import com.nowjordanhappy.photos_ui.utils.ManagerConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,14 +24,23 @@ class SearchGridViewModel
         private val photosUseCases: PhotoUseCases,
         private val connectivityManager: ManagerConnection,
 ) : ViewModel(){
+    val numColumns = 3
+    val maxListRange = 3
+    val gridWidth = (ScreenHelper.getScreenWidth() * 0.95).toInt()
+    val cartWidth = (0.8 * ScreenHelper.getScreenWidth() / numColumns).toInt()
+    val cardHeight = (cartWidth * 0.6).toInt()
+
     private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
 
     private val _progressBarState: MutableStateFlow<ProgressBarState> = MutableStateFlow(ProgressBarState.Idle)
     val progressBarState: StateFlow<ProgressBarState> = _progressBarState.asStateFlow()
 
-    private val _photos = MutableStateFlow(emptyList<Photo>())
-    val photos: StateFlow<List<Photo>> = _photos.asStateFlow()
+    private val _photoList = MutableStateFlow(PhotoListState())
+    val photoList: StateFlow<PhotoListState> = _photoList.asStateFlow()
+
+    /*private val _photos = MutableStateFlow(emptyList<Photo>())
+    val photos: StateFlow<List<Photo>> = _photos.asStateFlow()*/
 
     private val _query = MutableStateFlow("")
     val query = _query.asStateFlow()
@@ -39,11 +51,14 @@ class SearchGridViewModel
     private val _pageSize = MutableStateFlow(Constants.RECIPE_PAGINATION_PAGE_SIZE)
     //val pageSize = _pageSize.asStateFlow()
 
-    private val _gridModeOn = MutableStateFlow(false)
-    val gridModeOn = _gridModeOn.asStateFlow()
+    /*private val _gridModeOn = MutableStateFlow(false)
+    val gridModeOn = _gridModeOn.asStateFlow()*/
 
     private val _listSearchType: MutableStateFlow<ListSearchType> = MutableStateFlow(ListSearchType.Recent)
     val listSearchType = _listSearchType.asStateFlow()
+
+    private val _uiEvent = Channel<SearchGridUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         //onEvent(SearchEvent.OnRecentPhotos)
@@ -74,14 +89,17 @@ class SearchGridViewModel
         /*_state.value = _state.value.copy(
             gridModeOn = event.gridModeOn
         )*/
-        _gridModeOn.value = _gridModeOn.value
+        //_gridModeOn.value = _gridModeOn.value
+        _photoList.value = _photoList.value.copy(
+            gridModeOn = event.gridModeOn
+        )
     }
 
     private fun onChangeQuery(event: SearchEvent.OnChangeQuery){
         /*_state.value = _state.value.copy(
             query = event.query
         )*/
-        _query.value = _query.value
+        _query.value = event.query
     }
 
     private fun onNextPage() {
@@ -98,12 +116,12 @@ class SearchGridViewModel
                 onRecentPhotos(isForNextPage = true)
             }
             ListSearchType.Search -> {
-                onSearch()
+                onSearch(isForNextPage = true)
             }
         }
     }
 
-    private fun onSearch() {
+    private fun onSearch(isForNextPage: Boolean = false) {
         viewModelScope.launch {
             photosUseCases.searchPhotos.execute(
                 query = _state.value.query,
@@ -113,7 +131,19 @@ class SearchGridViewModel
             ).onEach { dataState ->
                 when(dataState){
                     is DataState.Data -> {
-                        _photos.value = dataState.data ?: emptyList()
+                        /*_photoList.value = _photoList.value.copy(
+                            photos = dataState.data ?: emptyList()
+                        )*/
+                        if(!isForNextPage){
+                            _photoList.value = _photoList.value.copy(
+                                photos = dataState.data ?: emptyList()
+                            )
+
+                            //_photos.value = dataState.data ?: emptyList()
+                        }else{
+                            appendPhotos(dataState.data ?: emptyList())
+                            _uiEvent.send(SearchGridUiEvent.SuccessSearch)
+                        }
                     }
                     is DataState.Loading -> {
                         _progressBarState.value = dataState.progressBarState
@@ -121,7 +151,9 @@ class SearchGridViewModel
                     is DataState.Response -> {
                         when(dataState.uiComponent){
                             is UIComponent.None -> {
-
+                                val message = (dataState.uiComponent as UIComponent.None).message
+                                Log.v("SearchGridVM", "onSearch UIComponent.None: $message")
+                                _uiEvent.send(SearchGridUiEvent.ShowError(message))
                             }
                         }
                     }
@@ -143,23 +175,27 @@ class SearchGridViewModel
                     is DataState.Data -> {
                         //_photos.emit(dataState.data ?: emptyList())
                         if(!isForNextPage){
-                            _photos.value = dataState.data ?: emptyList()
+                            _photoList.value = _photoList.value.copy(
+                                photos = dataState.data ?: emptyList()
+                            )
+
+                            //_photos.value = dataState.data ?: emptyList()
                         }else{
                             appendPhotos(dataState.data ?: emptyList())
                         }
-                        //_photos.value = dataState.data ?: emptyList()
-                        //_photos.value = dataState.data ?: emptyList()
-                        Log.v("SearchGridVM", "onRecentPhotos updating data: ${_photos.value.size}")
+                        Log.v("SearchGridVM", "onRecentPhotos updating data: ${_photoList.value.photos.size}")
                     }
                     is DataState.Loading -> {
                         Log.v("SearchGridVM", "onRecentPhotos progressBarState: ${dataState.progressBarState}")
                         _progressBarState.value = dataState.progressBarState
-                        //_progressBarState.emit(dataState.progressBarState)
                     }
                     is DataState.Response -> {
                         when(dataState.uiComponent){
                             is UIComponent.None -> {
-                                Log.v("SearchGridVM", "onRecentPhotos UIComponent.None: ${(dataState.uiComponent as UIComponent.None).message}")
+                                val message = (dataState.uiComponent as UIComponent.None).message
+                                Log.v("SearchGridVM", "onRecentPhotos UIComponent.None: $message")
+                                _progressBarState.value = ProgressBarState.Idle
+                                _uiEvent.send(SearchGridUiEvent.ShowError(message))
                             }
                         }
                     }
@@ -170,8 +206,15 @@ class SearchGridViewModel
     }
 
     private fun appendPhotos(_photos: List<Photo>){
-        val current = ArrayList(this._photos.value)
+        val current = ArrayList(this._photoList.value.photos)
         current.addAll(_photos)
-        this._photos.value = current
+        this._photoList.value = this._photoList.value.copy(
+            photos = current
+        )
     }
+}
+
+sealed class SearchGridUiEvent{
+    object SuccessSearch: SearchGridUiEvent()
+    data class ShowError(val message: String): SearchGridUiEvent()
 }

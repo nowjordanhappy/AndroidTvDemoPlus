@@ -30,6 +30,7 @@ class GetRecentPhotos(
 
             if(isNetworkAvailable){
                 try {
+                    emit(DataState.Response(UIComponent.None("API Error")))
                     repository.getRecentPhotosRemote(
                         page = page,
                         pageSize = pageSize

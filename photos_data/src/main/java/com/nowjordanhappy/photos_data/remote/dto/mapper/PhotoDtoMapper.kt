@@ -1,10 +1,12 @@
 package com.nowjordanhappy.photos_data.remote.dto.mapper
 
+import android.util.Log
 import com.nowjordanhappy.core.Constants
 import com.nowjordanhappy.photos_data.remote.dto.PhotoDto
 import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos.domain.util.DateUtils
 import com.nowjordanhappy.photos.domain.util.DomainNullableMapper
+import java.util.*
 
 class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
 
@@ -19,7 +21,8 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
             isPublic = model.ispublic == 1L,
             isFamily = model.isfamily == 1L,
             dateUpload = getDateUpload(model.dateupload),
-            ownername = model.ownername ?: "No ownername"
+            ownername = model.ownername ?: "No ownername",
+            dateSaved = getDateSaved(model.dateupload)
         )
     }
 
@@ -47,5 +50,11 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
         return dateupload?.let {
             DateUtils.dateToString(DateUtils.longToDate(it.toLong()*1000))
         } ?: kotlin.run { "No Date" }
+    }
+
+    private fun getDateSaved(dateupload: String?): Long{
+        val time = Date().time
+        Log.v("PhotoEntity", "PhotoDtoMapper time: $time - dateupload: $dateupload")
+        return time
     }
 }
