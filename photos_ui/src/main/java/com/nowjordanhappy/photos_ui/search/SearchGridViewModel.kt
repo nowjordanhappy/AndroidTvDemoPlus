@@ -135,6 +135,9 @@ class SearchGridViewModel
     }
 
     private fun onSearch(isForNextPage: Boolean = false) {
+        //reset page
+        _page.value = 1
+
         viewModelScope.launch {
             photosUseCases.searchPhotos.execute(
                 query = _state.value.query,

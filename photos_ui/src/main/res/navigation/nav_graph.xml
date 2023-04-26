@@ -39,6 +39,10 @@
         android:id="@+id/detailPhotoFragment"
         android:name="com.nowjordanhappy.photos_ui.detail_photo.DetailPhotoFragment"
         android:label="DetailPhotoFragment" />
+    <fragment
+        android:id="@+id/detailPhoto2Fragment"
+        android:name="com.nowjordanhappy.photos_ui.detail_photo.DetailPhoto2Fragment"
+        android:label="DetailPhoto2Fragment" />
 
 
 </navigation>

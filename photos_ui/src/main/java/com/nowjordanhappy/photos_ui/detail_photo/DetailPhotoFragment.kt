@@ -15,11 +15,14 @@ import androidx.leanback.widget.ListRow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.nowjordanhappy.core_ui.ScreenHelper
+import com.nowjordanhappy.core_ui.domain.ProgressBarState
 import com.nowjordanhappy.photos_domain.model.Photo
+import com.nowjordanhappy.photos_ui.R
 import com.nowjordanhappy.photos_ui.detail_photo.components.DetailsDescriptionPresenter
 import com.nowjordanhappy.photos_ui.search.SearchEvent
 import com.nowjordanhappy.photos_ui.search.SearchGridFragment
@@ -33,7 +36,7 @@ import kotlinx.coroutines.launch
 /**
  * Loads a grid of cards with movies to browse.
  */
-class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener {
+class DetailPhotoFragment : DetailsSupportFragment() {
     private val viewModel: SearchGridViewModel by activityViewModels()
 
     private var myCustomTitleView: CustomTitleView? = null
@@ -51,6 +54,7 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
         mDetailsBackground = DetailsSupportFragmentBackgroundController(this)
         mDetailsBackground.enableParallax()
         prepareBackgroundManager()
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -130,30 +134,30 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
         startUpdates()
     }
 
-    fun startUpdates() {
+    private fun startUpdates() {
         stopUpdates()
         job = viewLifecycleOwner.lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 // this block is automatically executed when moving into
                 // the started state, and cancelled when stopping.
-                while (true) {
+                //while (true) {
                     viewModel.selectedPhoto.value.photo?.let { photo->
                         val index = viewModel.selectedPhoto.value.index
                         Log.v("Detail", "current index selected: $index")
                         if(index > -1){
                             viewModel.photoList.value.photos.getOrNull(index+1)?.let { next->
                                 Log.v("Detail", "next: ${index+1} - ${photo.dateUpload} - ${photo.title}")
-                                viewModel.onEvent(SearchEvent.OnSelectPhoto(next))
+                                //viewModel.onEvent(SearchEvent.OnSelectPhoto(next))
                             }
                         }
                     }
-                    delay(2000)
-                }
+                    //delay(2000)
+                //}
             }
         }
     }
 
-    fun stopUpdates() {
+    private fun stopUpdates() {
         job?.cancel()
         job = null
     }
@@ -219,14 +223,5 @@ class DetailPhotoFragment : DetailsSupportFragment(), OnItemViewClickedListener 
 
     companion object {
         private val TAG = "DetailPhotoFragment"
-    }
-
-    override fun onItemClicked(
-        itemViewHolder: Presenter.ViewHolder?,
-        item: Any?,
-        rowViewHolder: RowPresenter.ViewHolder?,
-        row: Row?
-    ) {
-
     }
 }

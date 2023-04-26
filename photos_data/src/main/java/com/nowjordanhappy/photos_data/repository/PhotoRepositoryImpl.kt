@@ -25,6 +25,10 @@ class PhotoRepositoryImpl(
             query = query
         )
 
+        if(page == 1){
+            photoDao.deleteAllPhotos()
+        }
+
         photoDao.insertPhotos(photos.map { entityMapper.mapFromDomainModel(it) })
         return photos
     }
@@ -75,9 +79,9 @@ class PhotoRepositoryImpl(
             pageSize = pageSize,
         )
 
-        /*if(page == 1){
+        if(page == 1){
             photoDao.deleteAllPhotos()
-        }*/
+        }
 
         val list = photos.map { entityMapper.mapFromDomainModel(it) }
         photoDao.insertPhotos(list)
@@ -117,7 +121,7 @@ class PhotoRepositoryImpl(
             page = page
         )
 
-        val list = localPhotos.map { entityMapper.mapToDomainModel(it) }
+        //val list = localPhotos.map { entityMapper.mapToDomainModel(it) }
         return localPhotos.map { entityMapper.mapToDomainModel(it) }
     }
 

@@ -22,7 +22,7 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
             isFamily = model.isfamily == 1L,
             dateUpload = getDateUpload(model.dateupload),
             ownername = model.ownername ?: "No ownername",
-            dateSaved = getDateSaved(model.dateupload)
+            dateSaved = getDateSaved(model.dateupload, model.ownername ?: "No owner")
         )
     }
 
@@ -52,9 +52,9 @@ class PhotoDtoMapper: DomainNullableMapper<PhotoDto, Photo> {
         } ?: kotlin.run { "No Date" }
     }
 
-    private fun getDateSaved(dateupload: String?): Long{
+    private fun getDateSaved(dateupload: String?, name: String): Long{
         val time = Date().time
-        Log.v("PhotoEntity", "PhotoDtoMapper time: $time - dateupload: $dateupload")
+        //Log.v("PhotoEntity", "PhotoDtoMapper name: $name - time: $time - dateupload: $dateupload")
         return time
     }
 }

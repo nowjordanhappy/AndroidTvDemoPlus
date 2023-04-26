@@ -47,7 +47,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupFragment()
-        prepareBackgroundManager()
+        //prepareBackgroundManager()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -122,6 +122,12 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                prepareBackgroundManager()
+            }
+        }
     }
 
     private fun showError(message: String) {
@@ -154,7 +160,11 @@ class SearchGridFragment: VerticalGridSupportFragment() {
     }
     private fun prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(activity)
-        mBackgroundManager.attach(requireActivity().window)
+        if(mBackgroundManager.isAttached){
+            mBackgroundManager.clearDrawable()
+        }else{
+            mBackgroundManager.attach(requireActivity().window)
+        }
         mDefaultBackground = ContextCompat.getDrawable(requireActivity(), com.nowjordanhappy.core_ui.R.drawable.search_background)
     }
 
@@ -214,6 +224,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 if (item is Photo) {
                     //viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
                     Log.v(TAG, "OnItemViewClickedListener: ${item.dateUpload} - ${item.title} - isOnPause: $isOnPause")
+                    //findNavController().navigate(R.id.detailPhoto2Fragment)
                     findNavController().navigate(R.id.detailPhotoFragment)
                     isOnPause = true
                 }
