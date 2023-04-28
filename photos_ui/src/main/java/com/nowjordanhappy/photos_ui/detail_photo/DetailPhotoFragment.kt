@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
+import android.view.View.OnKeyListener
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.activityViewModels
@@ -72,40 +74,14 @@ class DetailPhotoFragment : DetailsSupportFragment() {
 
     private fun setParams(){
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED){
                 viewModel.selectedPhoto.collect{ selectedPhoto->
                     initializeBackground(selectedPhoto.photo?.imageUrl)
                 }
             }
         }
 
-        /*val rowPresenter: FullWidthDetailsOverviewRowPresenter =
-            object : FullWidthDetailsOverviewRowPresenter(
-                DetailsDescriptionPresenter(width = ScreenHelper.getScreenWidth(), height = ScreenHelper.getScreenHeight())
-            ) {
-                override fun createRowViewHolder(parent: ViewGroup?): RowPresenter.ViewHolder? {
-                    // Customize Actionbar and Content by using custom colors.
-                    val viewHolder = super.createRowViewHolder(parent)
-                    /*val actionsView =
-                        viewHolder.view.findViewById<View>(R.id.details_overview_actions_background)
-                    actionsView.setBackgroundColor(activity!!.resources.getColor(R.color.detail_view_actionbar_background))
-                    val detailsView = viewHolder.view.findViewById<View>(R.id.details_frame)
-                    detailsView.setBackgroundColor(
-                        resources.getColor(com.nowjordanhappy.core_ui.R.color.search_background)
-                    )*/
-                    return viewHolder
-                }
-            }
-
-        val shadowDisabledRowPresenter = ListRowPresenter()
-        shadowDisabledRowPresenter.shadowEnabled = false
-
-        val rowPresenterSelector = ClassPresenterSelector()
-        rowPresenterSelector.addClassPresenter(DetailsOverviewRow::class.java, rowPresenter)
-        //rowPresenterSelector.addClassPresenter(CardListRow::class.java, shadowDisabledRowPresenter)
-        rowPresenterSelector.addClassPresenter(ListRow::class.java, ListRowPresenter())
-        mRowsAdapter = ArrayObjectAdapter(rowPresenterSelector)
-
+        /*
         // Setup action and detail row.
         // Setup action and detail row.
         val detailsOverview = DetailsOverviewRow(viewModel.selectedPhoto.value)
@@ -131,7 +107,53 @@ class DetailPhotoFragment : DetailsSupportFragment() {
 
         adapter = mRowsAdapter*/
 
-        startUpdates()
+        //startUpdates()
+
+        view?.isFocusableInTouchMode = true
+        view?.requestFocus()
+
+        view?.setOnKeyListener(object : OnKeyListener{
+            override fun onKey(p0: View?, keyCode: Int, key: KeyEvent?): Boolean {
+                Log.v("Detail", "fragment keyCode: $keyCode")
+
+                if(key?.action == KeyEvent.ACTION_DOWN){
+                    keyCode.let { keyEvent ->
+                        viewModel.selectedPhoto.value.photo?.let {photo: Photo ->
+                            val index = viewModel.selectedPhoto.value.index
+                            when(keyEvent){
+                                KeyEvent.KEYCODE_DPAD_LEFT->{
+                                    //LEFT
+                                    if(index > -1){
+                                        viewModel.photoList.value.photos.getOrNull(index-1)?.let { previous->
+                                            viewModel.onEvent(SearchEvent.OnSelectPhoto(previous))
+                                        }
+                                    }
+                                    return true
+                                }
+
+                                KeyEvent.KEYCODE_DPAD_RIGHT->{
+                                    //RIGHT
+                                    if(index > -1){
+                                        viewModel.photoList.value.photos.getOrNull(index+1)?.let { previous->
+                                            viewModel.onEvent(SearchEvent.OnSelectPhoto(previous))
+                                        }
+                                    }
+                                    return true
+                                }
+                                KeyEvent.META_SYM_ON->{
+                                   findNavController().popBackStack()
+                                    return true
+                                }
+
+                                else-> return true
+                            }
+                        }
+                    }
+                }
+                return true
+            }
+
+        })
     }
 
     private fun startUpdates() {
@@ -142,6 +164,7 @@ class DetailPhotoFragment : DetailsSupportFragment() {
                 // the started state, and cancelled when stopping.
                 //while (true) {
                     viewModel.selectedPhoto.value.photo?.let { photo->
+
                         val index = viewModel.selectedPhoto.value.index
                         Log.v("Detail", "current index selected: $index")
                         if(index > -1){
@@ -177,7 +200,7 @@ class DetailPhotoFragment : DetailsSupportFragment() {
     }
 
     private fun initializeBackground(imageUrl: String?) {
-        Log.v("Detailphoto", "initializeBackground")
+        Log.v("Detailphoto", "initializeBackground: ${imageUrl}")
         mDetailsBackground.enableParallax()
         Glide.with(requireContext())
             .asBitmap()
@@ -220,6 +243,31 @@ class DetailPhotoFragment : DetailsSupportFragment() {
         super.onDestroyView()
     }
 
+    public fun rightAction(){
+        //RIGHT
+        viewModel.selectedPhoto.value.photo?.let { photo: Photo ->
+            val index = viewModel.selectedPhoto.value.index
+            if (index > -1) {
+                viewModel.photoList.value.photos.getOrNull(index + 1)?.let { next ->
+                    Log.v("Detail", "next: ${index + 1} - ${photo.dateUpload} - ${photo.title}")
+                    viewModel.onEvent(SearchEvent.OnSelectPhoto(next))
+                }
+            }
+        }
+    }
+
+    public fun leftAction(){
+        //RIGHT
+        viewModel.selectedPhoto.value.photo?.let { photo: Photo ->
+            val index = viewModel.selectedPhoto.value.index
+            if (index > -1) {
+                viewModel.photoList.value.photos.getOrNull(index - 1)?.let { next ->
+                    Log.v("Detail", "next: ${index + 1} - ${photo.dateUpload} - ${photo.title}")
+                    viewModel.onEvent(SearchEvent.OnSelectPhoto(next))
+                }
+            }
+        }
+    }
 
     companion object {
         private val TAG = "DetailPhotoFragment"

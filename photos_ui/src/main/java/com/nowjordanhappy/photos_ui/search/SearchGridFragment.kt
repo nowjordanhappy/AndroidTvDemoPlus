@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchGridFragment: VerticalGridSupportFragment() {
-    //private val viewModel by activityViewModels<SearchGridViewModel>()
     private val viewModel: SearchGridViewModel by activityViewModels()
 
     private var mAdapter: ArrayObjectAdapter? = null
@@ -224,6 +223,7 @@ class SearchGridFragment: VerticalGridSupportFragment() {
                 if (item is Photo) {
                     //viewModel.onEvent(SearchEvent.OnSelectPhoto(item))
                     Log.v(TAG, "OnItemViewClickedListener: ${item.dateUpload} - ${item.title} - isOnPause: $isOnPause")
+                    Log.v(TAG, "OnItemViewClickedListener: ${viewModel.selectedPhoto.value.photo?.imageUrl} - ${viewModel.selectedPhoto.value.photo?.title}")
                     //findNavController().navigate(R.id.detailPhoto2Fragment)
                     findNavController().navigate(R.id.detailPhotoFragment)
                     isOnPause = true

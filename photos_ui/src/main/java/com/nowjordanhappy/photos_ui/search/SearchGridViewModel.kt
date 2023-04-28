@@ -20,8 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchGridViewModel
     @Inject constructor(
-        private val photosUseCases: PhotoUseCases,
-        private val connectivityManager: ManagerConnection,
+            private val photosUseCases: PhotoUseCases,
+            private val connectivityManager: ManagerConnection,
 ) : ViewModel(){
     val numColumns = 3
     val maxListRange = 3
