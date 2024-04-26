@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id(Plugins.androidApplication)
     id(Plugins.kotlinAndroid)
@@ -16,6 +18,16 @@ android {
         versionCode = ProjectConfig.versionCode
         versionName = ProjectConfig.versionName
 
+        val gradlePropertiesFile = rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(gradlePropertiesFile.inputStream())
+        val flickrApiKey: String = properties.getProperty("FLICKR_API_KEY") ?: throw GradleException("API key not found in gradle.properties file!")
+
+        buildConfigField(
+            type = "String",
+            name = "FLICKR_API_KEY",
+            value = flickrApiKey
+        )
     }
 
     buildTypes {

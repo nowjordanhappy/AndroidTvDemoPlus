@@ -3,7 +3,6 @@ package com.nowjordanhappy.core
 object Constants {
     const val BASE_URL = "https://www.flickr.com/services/"
     const val IMAGE_BASE_URL = "https://live.staticflickr.com/"
-    const val API_KEY = "23412e392c94e78fbd6398848503e847"
 
     const val RECIPE_PAGINATION_PAGE_SIZE = 30
 

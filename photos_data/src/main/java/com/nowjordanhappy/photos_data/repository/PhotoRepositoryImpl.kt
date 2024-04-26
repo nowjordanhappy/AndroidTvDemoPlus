@@ -1,6 +1,5 @@
 package com.nowjordanhappy.photos_data.repository
 
-import android.util.Log
 import com.nowjordanhappy.core.Constants
 import com.nowjordanhappy.core.domain.StatResponse
 import com.nowjordanhappy.photos_data.local.entity.PhotoDao
@@ -12,6 +11,7 @@ import com.nowjordanhappy.photos_domain.model.Photo
 import com.nowjordanhappy.photos_domain.repository.PhotoRepository
 
 class PhotoRepositoryImpl(
+    private val apiKey: String,
     private val photoDao: PhotoDao,
     private val service: PhotoApi,
     private val entityMapper: PhotoEntityMapper,
@@ -37,7 +37,7 @@ class PhotoRepositoryImpl(
     ): List<Photo>{
         val response = service.search(
             method = Constants.METHOD_SEARCH,
-            apiKey = Constants.API_KEY,
+            apiKey = apiKey,
             text = query,
             extras = Constants.API_PHOTO_EXTRAS,
             format = Constants.API_FORMAT,
@@ -92,7 +92,7 @@ class PhotoRepositoryImpl(
     ): List<Photo>{
         val response = service.getRecent(
             method = Constants.METHOD_PHOTOS_GET_RECENT,
-            apiKey = Constants.API_KEY,
+            apiKey = apiKey,
             extras = Constants.API_PHOTO_EXTRAS,
             format = Constants.API_FORMAT,
             perPage = pageSize,

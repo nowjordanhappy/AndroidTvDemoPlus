@@ -61,10 +61,12 @@ object PhotoDataModule {
     @Provides
     @Singleton
     fun providePhotoRepository(
+        apiKey: String,
         api: PhotoApi,
         db: AppDatabase,
     ): PhotoRepository{
         return PhotoRepositoryImpl(
+            apiKey = apiKey,
             photoDao = db.photoDao,
             service = api,
             entityMapper = PhotoEntityMapper(),
