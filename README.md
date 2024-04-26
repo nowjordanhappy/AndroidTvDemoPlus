@@ -13,7 +13,7 @@
 </div>
 
 # Android TV + Leanback - Multi Module
-This is a an androi tv demo using Leanback and multi modules. The main idea is showing recent photos and also the ability to search using voice or text.
+This is a an android TV demo using Leanback and multi modules. The main idea is showing recent photos and also the ability to search using voice or text.
 
 
 ## Features<a name = "features"></a>
@@ -41,7 +41,7 @@ FLICKR_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 ## References<a name = "references"></a>
 - [Leanback](https://developer.android.com/jetpack/androidx/releases/leanback)
-- [Hilt](hhttps://developer.android.com/training/dependency-injection/hilt-android)
+- [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - [Flickr API](https://www.flickr.com/services/developer/api/)
 
 ## Author<a name = "author"></a>
